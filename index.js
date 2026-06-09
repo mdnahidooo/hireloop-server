@@ -7,7 +7,7 @@ require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 
@@ -32,6 +32,10 @@ async function run() {
         const jobCollection = database.collection("jobs");
         const companyCollection = database.collection("companies");
         const usersCollection = database.collection("user");
+        const applicationsCollection = database.collection("applications");
+        const planCollection = database.collection('plans');
+        const subscriptionCollection = database.collection('subscriptions');
+
 
         app.get('/api/users', async (req, res) => {
 
@@ -59,7 +63,8 @@ async function run() {
                 _id: new ObjectId(id)
             }
             const result = await jobCollection.findOne(query);
-            res.send(result);
+            console.log(result);
+            res.json(result);
         })
 
         app.post('/api/jobs', async (req, res) => {
@@ -70,10 +75,36 @@ async function run() {
             }
             const result = await jobCollection.insertOne(newJob);
             res.send(result);
+        });
+
+
+        // application related apis
+        app.get('/api/applications', async (req, res) => {
+            const query = {};
+            if (req.query.applicantId) {
+                query.applicantId = req.query.applicantId;
+            }
+            if (req.query.jobId) {
+                query.jobId = req.query.jobId;
+            }
+            const cursor = applicationsCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
         })
 
-        // company related apis
+        app.post('/api/applications', async (req, res) => {
+            const application = req.body;
+            const newApplication = {
+                ...application,
+                createdAt: new Date()
+            }
+            const result = await applicationsCollection.insertOne(newApplication);
+            res.send(result);
+        })
 
+        
+
+        // company related apis
         app.get('/api/companies', async (req, res) => {
             const cursor = companyCollection.find().skip(4);
             const result = await cursor.toArray();
