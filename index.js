@@ -134,7 +134,7 @@ async function run() {
 
 
 
-        // plans 
+        // plans api
         app.get('/api/plans', async (req, res) => {
             const query = {}
             if (req.query.plan_id) {
