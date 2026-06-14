@@ -144,7 +144,7 @@ async function run() {
             res.send(plan)
         })
 
-        // subscription apis
+        // subscription 
         app.post('/api/subscriptions', async (req, res) => {
             const data = req.body;
             const subsInfo = {
